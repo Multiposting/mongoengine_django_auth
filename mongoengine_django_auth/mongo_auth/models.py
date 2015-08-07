@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.db.models import fields
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
@@ -106,6 +107,11 @@ class MongoUser(models.Model):
     """
 
     objects = MongoUserManager()
+
+    # Add a PK field supporting ObjectIDs: Django will use this
+    # field's to_python method to convert the primary key to a
+    # valid session key.
+    string_field = fields.CharField(primary_key=True, max_length=24)
 
     class Meta:
         app_label = 'mongo_auth'

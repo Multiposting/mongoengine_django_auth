@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentTypeManager
 from django.contrib import auth
 from django.contrib.auth.models import AnonymousUser
 from django.utils.translation import ugettext_lazy as _
+from mongoengine.base.metaclasses import MetaDict
 
 from .utils import datetime_now
 
@@ -242,6 +243,15 @@ class User(Document):
             {'fields': ['username'], 'unique': True, 'sparse': True}
         ]
     }
+
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+
+        class PrimaryKeyField(object):
+            def value_to_string(self, user):
+                return str(user.pk)
+
+        self._meta.pk = PrimaryKeyField()
 
     def __unicode__(self):
         return self.username
