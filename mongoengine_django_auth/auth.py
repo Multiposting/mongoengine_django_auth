@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentTypeManager
 from django.contrib import auth
 from django.contrib.auth.models import AnonymousUser
 from django.utils.translation import ugettext_lazy as _
+from mongoengine.base.metaclasses import MetaDict
 
 from .utils import datetime_now
 
@@ -199,7 +200,7 @@ class UserManager(models.Manager):
         return ''.join([choice(allowed_chars) for i in range(length)])
 
 
-class User(Document):
+class BaseUser(Document):
     """A User document that aims to mirror most of the API specified by Django
     at http://docs.djangoproject.com/en/dev/topics/auth/#users
     """
@@ -237,11 +238,20 @@ class User(Document):
     REQUIRED_FIELDS = ['email']
 
     meta = {
-        'allow_inheritance': True,
+        'abstract': True,
         'indexes': [
             {'fields': ['username'], 'unique': True, 'sparse': True}
         ]
     }
+
+    def __init__(self, *args, **kwargs):
+        super(BaseUser, self).__init__(*args, **kwargs)
+
+        class PrimaryKeyField(object):
+            def value_to_string(self, user):
+                return str(user.pk)
+
+        self._meta.pk = PrimaryKeyField()
 
     def __unicode__(self):
         return self.username
@@ -260,7 +270,7 @@ class User(Document):
 
     def set_password(self, raw_password):
         """Sets the user's password - always use this rather than directly
-        assigning to :attr:`~mongoengine.django.auth.User.password` as the
+        assigning to :attr:`~mongoengine_django_auth.BaseUser.password` as the
         password is hashed before storage.
         """
         self.password = make_password(raw_password)
@@ -270,7 +280,7 @@ class User(Document):
     def check_password(self, raw_password):
         """Checks the user's password against a provided password - always use
         this rather than directly comparing to
-        :attr:`~mongoengine.django.auth.User.password` as the password is
+        :attr:`~mongoengine_django_auth.BaseUser.password` as the password is
         hashed before storage.
         """
         return check_password(raw_password, self.password)
@@ -374,8 +384,12 @@ class User(Document):
         return self._profile_cache
 
 
+class User(BaseUser):
+    """A non-abstract class directly usable in projects for basic use."""
+
+
 class MongoEngineBackend(object):
-    """Authenticate using MongoEngine and mongoengine.django.auth.User.
+    """Authenticate using MongoEngine and mongoengine_django_auth.User.
     """
 
     supports_object_permissions = False
