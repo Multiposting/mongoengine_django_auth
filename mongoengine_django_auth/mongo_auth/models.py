@@ -14,7 +14,7 @@ __all__ = (
 
 
 MONGOENGINE_USER_DOCUMENT = getattr(
-    settings, 'MONGOENGINE_USER_DOCUMENT', 'mongoengine.django.auth.User')
+    settings, 'MONGOENGINE_USER_DOCUMENT', 'mongoengine_django_auth.auth.User')
 
 
 def get_user_document():
