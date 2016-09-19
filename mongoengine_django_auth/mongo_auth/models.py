@@ -22,7 +22,7 @@ def get_user_document():
     """Get the user document class used for authentication.
 
     This is the class defined in settings.MONGOENGINE_USER_DOCUMENT, which
-    defaults to `mongoengine.django.auth.User`.
+    defaults to `mongoengine_django_auth.auth.User`.
 
     """
 
@@ -41,7 +41,7 @@ class MongoUserManager(UserManager):
         INSTALLED_APPS = (
             ...
             'django.contrib.auth',
-            'mongoengine.django.mongo_auth',
+            'mongoengine_django_auth.mongo_auth',
             ...
         )
         AUTH_USER_MODEL = 'mongo_auth.MongoUser'
@@ -49,7 +49,7 @@ class MongoUserManager(UserManager):
     Django will use the model object to access the custom Manager, which will
     replace the original queryset with MongoEngine querysets.
 
-    By default, mongoengine.django.auth.User will be used to store users. You
+    By default, mongoengine_django_auth.auth.User will be used to store users. You
     can specify another document class in MONGOENGINE_USER_DOCUMENT in your
     settings.py.
 
@@ -100,7 +100,7 @@ class MongoUser(models.Model):
     """"Dummy user model for Django.
 
     MongoUser is used to replace Django's UserManager with MongoUserManager.
-    The actual user document class is mongoengine.django.auth.User or any
+    The actual user document class is mongoengine_django_auth.auth.User or any
     other document class specified in MONGOENGINE_USER_DOCUMENT.
 
     To get the user document class, use `get_user_document()`.
