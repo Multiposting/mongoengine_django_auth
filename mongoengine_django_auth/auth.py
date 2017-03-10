@@ -204,9 +204,9 @@ class BaseUser(Document):
     """A User document that aims to mirror most of the API specified by Django
     at http://docs.djangoproject.com/en/dev/topics/auth/#users
     """
-    username = StringField(max_length=30, required=True,
+    username = StringField(max_length=128, required=True,
                            verbose_name=_('username'),
-                           help_text=_("Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters"))
+                           help_text=_("Required. 128 characters or fewer. Letters, numbers and @/./+/-/_ characters"))
 
     first_name = StringField(max_length=30,
                              verbose_name=_('first name'))
@@ -239,9 +239,6 @@ class BaseUser(Document):
 
     meta = {
         'abstract': True,
-        'indexes': [
-            {'fields': ['username'], 'unique': True, 'sparse': True}
-        ]
     }
 
     def __init__(self, *args, **kwargs):
@@ -386,6 +383,11 @@ class BaseUser(Document):
 
 class User(BaseUser):
     """A non-abstract class directly usable in projects for basic use."""
+    meta = {
+        'indexes': [
+            {'fields': ['username'], 'unique': True, 'sparse': True}
+        ]
+    }
 
 
 class MongoEngineBackend(object):
