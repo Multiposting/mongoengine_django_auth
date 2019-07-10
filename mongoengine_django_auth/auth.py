@@ -259,9 +259,11 @@ class BaseUser(Document):
         full_name = u'%s %s' % (self.first_name or '', self.last_name or '')
         return full_name.strip()
 
+    @property
     def is_anonymous(self):
         return False
 
+    @property
     def is_authenticated(self):
         return True
 

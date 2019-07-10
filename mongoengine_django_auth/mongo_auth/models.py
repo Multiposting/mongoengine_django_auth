@@ -120,3 +120,11 @@ class MongoUser(models.Model):
     def set_password(self, password):
         """Doesn't do anything, but works around the issue with Django 1.6."""
         make_password(password)
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    @property
+    def is_authenticated(self):
+        return True
